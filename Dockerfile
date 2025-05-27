@@ -2,9 +2,20 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev \
+    build-essential \
+    python3-dev \
+    pkg-config \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["uvicorn", "main:app", "--host", "localhost", "--port", "8000"] 
+# RUN python /app/app/init_db.py
+
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"] 
+CMD ["/bin/sh", "./init-and-start.sh"]
