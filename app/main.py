@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import users, clothes, posts
+from app.api import users, clothes, posts
 
 app = FastAPI(
     title="Ocean Backend",
