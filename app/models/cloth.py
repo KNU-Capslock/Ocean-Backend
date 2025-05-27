@@ -33,4 +33,4 @@ class Cloth(Base):
     user = relationship("User", back_populates="clothes")
     posts = relationship("Post", secondary=posts_clothes, back_populates="clothes")
 
-Base.metadata.create_all(bind=engine) 
+# Base.metadata.create_all(bind=engine) 

@@ -4,8 +4,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from database import Base, engine
-Base.metadata.create_all(bind=engine)
+from core.database import Base, engine
+# Base.metadata.create_all(bind=engine)
 class PostCloth(Base):
     __tablename__ = "posts_clothes"
 

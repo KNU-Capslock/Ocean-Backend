@@ -8,7 +8,7 @@ from core.database import Base, engine
 from datetime import datetime
 from models.cloth import posts_clothes
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 class Post(Base):
     __tablename__ = "posts"

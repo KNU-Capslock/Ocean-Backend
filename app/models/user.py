@@ -7,7 +7,7 @@ from sqlalchemy.sql import func
 from datetime import datetime
 from core.database import Base, engine
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 class User(Base):
     __tablename__ = "users"
