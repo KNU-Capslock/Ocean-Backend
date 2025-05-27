@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status, Form
+# from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 import os
 import uuid
 
@@ -9,10 +9,10 @@ from core.database import get_db
 from schemas.cloth import Cloth, ClothCreate, ClothUpdate
 from crud import cloth as cloth_crud
 from crud import user as user_crud
-from core.security import verify_token
+# from core.security import verify_token
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # 이미지 저장 디렉토리 설정
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads", "images")
@@ -21,20 +21,27 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 @router.post("/cloth", response_model=Cloth)
 async def create_cloth(
     file: UploadFile = File(...),
-    type: str = None,
-    detail: str = None,
-    print: str = None,
-    texture: str = None,
-    style: str = None,
-    token: str = Depends(oauth2_scheme),
+    type: str = Form(...),  # Form 데이터로 변경
+    detail: Optional[str] = Form(None),  # Form 데이터로 변경
+    print: Optional[str] = Form(None),   # Form 데이터로 변경
+    texture: Optional[str] = Form(None), # Form 데이터로 변경
+    style: Optional[str] = Form(None),   # Form 데이터로 변경
+    # token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
     # Verify token and get user
-    payload = verify_token(token)
-    username = payload.get("sub")
-    user = user_crud.get_user_by_name(db, username=username)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    # payload = verify_token(token)
+    # username = payload.get("sub")
+    # user = user_crud.get_user_by_name(db, username=username)
+    # if not user:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    # 필수 필드 검증
+    if not type:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Type is required"
+        )
 
     # 이미지 파일 확장자 검증
     allowed_extensions = {".jpg", ".jpeg", ".png", ".gif"}
@@ -63,46 +70,46 @@ async def create_cloth(
     
     cloth_data = ClothCreate(
         type=type,
-        detail=detail,
-        print=print,
-        texture=texture,
-        style=style,
-        user_id=user.id
+        detail=detail or "",  # NULL 대신 빈 문자열 사용
+        print=print or "",    # NULL 대신 빈 문자열 사용
+        texture=texture or "", # NULL 대신 빈 문자열 사용
+        style=style or "",    # NULL 대신 빈 문자열 사용
+        user_id=1  # 임시로 user_id=1 사용
     )
     
     return cloth_crud.create_cloth(db=db, cloth=cloth_data, image_src=file_location)
 
 @router.get("/cloth", response_model=List[Cloth])
 def get_user_clothes(
-    token: str = Depends(oauth2_scheme),
+    # token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
-    payload = verify_token(token)
-    username = payload.get("sub")
-    user = user_crud.get_user_by_name(db, username=username)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    # payload = verify_token(token)
+    # username = payload.get("sub")
+    # user = user_crud.get_user_by_name(db, username=username)
+    # if not user:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
-    return cloth_crud.get_clothes_by_user(db=db, user_id=user.id)
+    return cloth_crud.get_clothes_by_user(db=db, user_id=1)  # 임시로 user_id=1 사용
 
 @router.get("/cloth/{cloth_id}", response_model=Cloth)
 def get_cloth(
     cloth_id: int,
-    token: str = Depends(oauth2_scheme),
+    # token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
-    payload = verify_token(token)
-    username = payload.get("sub")
-    user = user_crud.get_user_by_name(db, username=username)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    # payload = verify_token(token)
+    # username = payload.get("sub")
+    # user = user_crud.get_user_by_name(db, username=username)
+    # if not user:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     cloth = cloth_crud.get_cloth(db=db, cloth_id=cloth_id)
     if not cloth:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cloth not found")
     
-    if cloth.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this cloth")
+    # if cloth.user_id != user.id:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this cloth")
     
     return cloth
 
@@ -110,42 +117,42 @@ def get_cloth(
 def update_cloth(
     cloth_id: int,
     cloth_update: ClothUpdate,
-    token: str = Depends(oauth2_scheme),
+    # token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
-    payload = verify_token(token)
-    username = payload.get("sub")
-    user = user_crud.get_user_by_name(db, username=username)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    # payload = verify_token(token)
+    # username = payload.get("sub")
+    # user = user_crud.get_user_by_name(db, username=username)
+    # if not user:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     cloth = cloth_crud.get_cloth(db=db, cloth_id=cloth_id)
     if not cloth:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cloth not found")
     
-    if cloth.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this cloth")
+    # if cloth.user_id != user.id:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this cloth")
     
     return cloth_crud.update_cloth(db=db, cloth_id=cloth_id, cloth=cloth_update)
 
 @router.delete("/cloth/{cloth_id}")
 def delete_cloth(
     cloth_id: int,
-    token: str = Depends(oauth2_scheme),
+    # token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
-    payload = verify_token(token)
-    username = payload.get("sub")
-    user = user_crud.get_user_by_name(db, username=username)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    # payload = verify_token(token)
+    # username = payload.get("sub")
+    # user = user_crud.get_user_by_name(db, username=username)
+    # if not user:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     cloth = cloth_crud.get_cloth(db=db, cloth_id=cloth_id)
     if not cloth:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cloth not found")
     
-    if cloth.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this cloth")
+    # if cloth.user_id != user.id:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this cloth")
     
     # 옷 삭제 시 이미지 파일도 함께 삭제
     try:

@@ -2,7 +2,7 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
-from fastapi.security import OAuth2PasswordBearer
+# from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import shutil
@@ -14,52 +14,52 @@ from core.database import get_db
 from schemas.post import Post, PostCreate, PostUpdate, PostFilter
 from crud import post as post_crud
 from crud import user as user_crud
-from core.security import verify_token
+# from core.security import verify_token
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # 이미지 저장 디렉토리 설정
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads", "images")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    try:
-        payload = verify_token(token)
-        name = payload.get("sub")
-        if name is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+# async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+#     try:
+#         payload = verify_token(token)
+#         name = payload.get("sub")
+#         if name is None:
+#             raise HTTPException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 detail="Invalid authentication credentials",
+#                 headers={"WWW-Authenticate": "Bearer"},
+#             )
         
-        user = user_crud.get_user_by_name(db, username=name)
-        if user is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
-            )
-        return user
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+#         user = user_crud.get_user_by_name(db, username=name)
+#         if user is None:
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail="User not found"
+#             )
+#         return user
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Invalid authentication credentials",
+#             headers={"WWW-Authenticate": "Bearer"},
+#         )
 
 @router.post("/post", response_model=Post)
 async def create_post(
     content: str,
     file: UploadFile = File(...),
-    token: str = Depends(oauth2_scheme),
+    # token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
-    payload = verify_token(token)
-    username = payload.get("sub")
-    user = user_crud.get_user_by_name(db, username=username)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    # payload = verify_token(token)
+    # username = payload.get("sub")
+    # user = user_crud.get_user_by_name(db, username=username)
+    # if not user:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     # 이미지 파일 확장자 검증
     allowed_extensions = {".jpg", ".jpeg", ".png", ".gif"}
@@ -87,20 +87,20 @@ async def create_post(
         )
     
     post_data = PostCreate(content=content)
-    return post_crud.create_post(db=db, post=post_data, image_src=file_location, user_id=user.id)
+    return post_crud.create_post(db=db, post=post_data, image_src=file_location, user_id=1)  # 임시로 user_id=1 사용
 
 @router.get("/post", response_model=List[Post])
 def get_user_posts(
-    token: str = Depends(oauth2_scheme),
+    # token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
-    payload = verify_token(token)
-    username = payload.get("sub")
-    user = user_crud.get_user_by_name(db, username=username)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    # payload = verify_token(token)
+    # username = payload.get("sub")
+    # user = user_crud.get_user_by_name(db, username=username)
+    # if not user:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
-    return post_crud.get_posts_by_username(db=db, username=username)
+    return post_crud.get_posts_by_username(db=db, username="test")  # 임시로 username="test" 사용
 
 @router.get("/post/{username}", response_model=List[Post])
 def get_posts_by_username(
@@ -127,42 +127,42 @@ def get_post(
 def update_post(
     post_id: int,
     post_update: PostUpdate,
-    token: str = Depends(oauth2_scheme),
+    # token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
-    payload = verify_token(token)
-    username = payload.get("sub")
-    user = user_crud.get_user_by_name(db, username=username)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    # payload = verify_token(token)
+    # username = payload.get("sub")
+    # user = user_crud.get_user_by_name(db, username=username)
+    # if not user:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     post = post_crud.get_post(db=db, post_id=post_id)
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     
-    if post.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this post")
+    # if post.user_id != user.id:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this post")
     
     return post_crud.update_post(db=db, post_id=post_id, post=post_update)
 
 @router.delete("/post/{post_id}")
 def delete_post(
     post_id: int,
-    token: str = Depends(oauth2_scheme),
+    # token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
-    payload = verify_token(token)
-    username = payload.get("sub")
-    user = user_crud.get_user_by_name(db, username=username)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    # payload = verify_token(token)
+    # username = payload.get("sub")
+    # user = user_crud.get_user_by_name(db, username=username)
+    # if not user:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     post = post_crud.get_post(db=db, post_id=post_id)
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     
-    if post.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this post")
+    # if post.user_id != user.id:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this post")
     
     # 게시물 삭제 시 이미지 파일도 함께 삭제
     try:

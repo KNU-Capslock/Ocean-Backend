@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 class ClothBase(BaseModel):
-    type: Optional[str] = None
+    type: str
     detail: Optional[str] = None
     print: Optional[str] = None
     texture: Optional[str] = None
