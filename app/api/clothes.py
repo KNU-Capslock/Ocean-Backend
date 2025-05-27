@@ -18,7 +18,7 @@ router = APIRouter()
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads", "images")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-@router.post("/cloth", response_model=Cloth)
+@router.post("/clothes", response_model=Cloth)
 async def create_cloth(
     file: UploadFile = File(...),
     type: str = Form(...),  # Form 데이터로 변경
@@ -79,7 +79,7 @@ async def create_cloth(
     
     return cloth_crud.create_cloth(db=db, cloth=cloth_data, image_src=file_location)
 
-@router.get("/cloth", response_model=List[Cloth])
+@router.get("/clothes", response_model=List[Cloth])
 def get_user_clothes(
     # token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
@@ -92,7 +92,7 @@ def get_user_clothes(
     
     return cloth_crud.get_clothes_by_user(db=db, user_id=1)  # 임시로 user_id=1 사용
 
-@router.get("/cloth/{cloth_id}", response_model=Cloth)
+@router.get("/clothes/{cloth_id}", response_model=Cloth)
 def get_cloth(
     cloth_id: int,
     # token: str = Depends(oauth2_scheme),
@@ -113,7 +113,7 @@ def get_cloth(
     
     return cloth
 
-@router.patch("/cloth/{cloth_id}", response_model=Cloth)
+@router.patch("/clothes/{cloth_id}", response_model=Cloth)
 def update_cloth(
     cloth_id: int,
     cloth_update: ClothUpdate,
@@ -135,7 +135,7 @@ def update_cloth(
     
     return cloth_crud.update_cloth(db=db, cloth_id=cloth_id, cloth=cloth_update)
 
-@router.delete("/cloth/{cloth_id}")
+@router.delete("/clothes/{cloth_id}")
 def delete_cloth(
     cloth_id: int,
     # token: str = Depends(oauth2_scheme),
