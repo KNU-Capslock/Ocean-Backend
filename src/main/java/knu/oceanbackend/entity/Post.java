@@ -25,12 +25,7 @@ public class Post extends BaseEntity{
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @ManyToMany
-    @JoinTable(
-        name = "post_clothes",
-        joinColumns = @JoinColumn(name = "post_id"),
-        inverseJoinColumns = @JoinColumn(name = "clothes_id")
-    )
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Clothes> clothes = new ArrayList<>();
 
     private String imageSrc;
