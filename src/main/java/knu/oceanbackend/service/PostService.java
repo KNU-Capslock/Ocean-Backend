@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +54,13 @@ public class PostService {
                 .toList();
     }
 
+    public List<PostResponseDto> getAllPosts() {
+        return postRepository.findAllByOrderByUpdatedAtDesc()
+                .stream()
+                .map(this::getPostResponseDto)
+                .collect(Collectors.toList());
+    }
+
     public void updatePost(Long id, PostRequestDto requestDto) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new PostNotFoundException("Post not found"));
@@ -73,6 +81,8 @@ public class PostService {
         List<Clothes> clothesList = clothesRepository.findByPostId(post.getId());
         List<ClothesResponseDto> clothesDtoList = clothesList.stream()
                 .map(clothes -> ClothesResponseDto.builder()
+                        .id(clothes.getId())
+                        .name(clothes.getName())
                         .username(clothes.getUser().getUsername())
                         .type(clothes.getType())
                         .detail(clothes.getDetail())
@@ -84,6 +94,7 @@ public class PostService {
                 .toList();
 
         return PostResponseDto.builder()
+                .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .imageSrc(post.getImageSrc())

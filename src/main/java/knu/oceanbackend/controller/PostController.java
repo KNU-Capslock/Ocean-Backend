@@ -75,12 +75,21 @@ public class PostController{
 
     @Operation(
             summary = "특정 사용자 게시물 조회",
-            description = "특정 사용자가 생성한 게시물 모두 조회(수정날짜 내림차순)"
+            description = "특정 사용자가 생성한 게시물 모두 조회(수정 날짜 내림차순)"
     )
     @GetMapping
     public ResponseEntity<List<PostResponseDto>> getPostsByUser(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("user_id");
         return ResponseEntity.ok(postService.getPostsByUser(userId));
+    }
+
+    @Operation(
+            summary = "전체 게시물 조회",
+            description = "모든 게시물을 조회(수정 날짜 내림차순)"
+    )
+    @GetMapping("/all")
+    public ResponseEntity<List<PostResponseDto>> getAllPosts() {
+        return ResponseEntity.ok(postService.getAllPosts());
     }
 
     @Operation(
