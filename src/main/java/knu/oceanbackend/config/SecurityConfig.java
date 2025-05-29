@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/login", "/login", "/auth/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                        .requestMatchers("/login", "/auth/**", "/swagger-ui/**", "/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/clothes", "/users").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 
         return http.build();
-    }
+    }   
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
