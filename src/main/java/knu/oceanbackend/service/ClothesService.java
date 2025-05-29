@@ -4,11 +4,14 @@ import knu.oceanbackend.dto.clothes.ClothesCreateRequestDto;
 import knu.oceanbackend.dto.clothes.ClothesResponseDto;
 import knu.oceanbackend.dto.clothes.ClothesUpdateRequestDto;
 import knu.oceanbackend.entity.Clothes;
+import knu.oceanbackend.entity.Post;
 import knu.oceanbackend.entity.User;
 import knu.oceanbackend.exception.ClothesNotFoundException;
+import knu.oceanbackend.exception.PostNotFoundException;
 import knu.oceanbackend.exception.UserNotFoundException;
 import knu.oceanbackend.external.AiServerClient;
 import knu.oceanbackend.repository.ClothesRepository;
+import knu.oceanbackend.repository.PostRepository;
 import knu.oceanbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,18 +31,24 @@ import java.util.UUID;
 public class ClothesService {
     private final UserRepository userRepository;
     private final ClothesRepository clothesRepository;
+    private final PostRepository postRepository;
     String directoryPath = "src/main/resources/static/clothes";
-
 
     private final AiServerClient aiServerClient;
 
-    public void processOriginalClothesImage(MultipartFile image, Long userId) {
-        aiServerClient.sendImageToAi(image, userId);
+    public void processOriginalClothesImage(MultipartFile image, Long userId, Long postId) {
+        aiServerClient.sendImageToAi(image, userId, postId);
     }
 
     public void saveClothes(MultipartFile image, ClothesCreateRequestDto requestDto) {
         User user = userRepository.findById(requestDto.getUserId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Post post = null;
+        if (requestDto.getPostId() != null){
+            post = postRepository.findById(requestDto.getPostId())
+                    .orElseThrow(() -> new PostNotFoundException("Post not found"));
+        }
 
         String filename = UUID.randomUUID() + ".png";
         Path imagePath = Paths.get(directoryPath, filename);
@@ -52,7 +61,9 @@ public class ClothesService {
         }
 
         Clothes clothes = new Clothes();
+
         clothes.setUser(user);
+        clothes.setPost(post);
         clothes.setType(requestDto.getType());
         clothes.setDetail(requestDto.getDetail());
         clothes.setPrint(requestDto.getPrint());

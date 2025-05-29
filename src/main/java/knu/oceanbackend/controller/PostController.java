@@ -46,7 +46,6 @@ public class PostController{
 
                 Path filePath = uploadDir.resolve(filename);
                 image.transferTo(filePath);
-                clothesService.processOriginalClothesImage(image, userId);
 
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -54,7 +53,9 @@ public class PostController{
         }
 
         Post post = requestDto.toEntity(filename);
-        postService.createPost(userId, post);
+        Long postId = postService.createPost(userId, post);
+        clothesService.processOriginalClothesImage(image, userId, postId);
+
         return ResponseEntity.noContent().build();
     }
 

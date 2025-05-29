@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ClothesRepository extends JpaRepository<Clothes, Long> {
     List<Clothes> findByUser(User user);
+
+    List<Clothes> findByPostId(Long postId);
 }

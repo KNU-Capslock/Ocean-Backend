@@ -19,6 +19,10 @@ public class Clothes extends BaseEntity{
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
+
     private String name;
 
     private String type;

@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class ClothesCreateRequestDto {
     private Long userId;
+    private Long postId;
     private String type;
     private String detail;
     private String print;

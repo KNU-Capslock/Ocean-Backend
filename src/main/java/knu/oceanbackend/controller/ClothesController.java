@@ -25,7 +25,7 @@ public class ClothesController {
             HttpServletRequest request,
             @RequestPart("image") MultipartFile image) {
         Long userId = (Long) request.getAttribute("user_id");
-        clothesService.processOriginalClothesImage(image, userId);
+        clothesService.processOriginalClothesImage(image, userId, null);
         return ResponseEntity.noContent().build();
     }
 
