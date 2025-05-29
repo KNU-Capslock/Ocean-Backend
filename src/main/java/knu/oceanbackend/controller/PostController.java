@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import knu.oceanbackend.dto.post.PostRequestDto;
 import knu.oceanbackend.dto.post.PostResponseDto;
 import knu.oceanbackend.entity.Post;
+import knu.oceanbackend.service.ClothesService;
 import knu.oceanbackend.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostController{
     private final PostService postService;
+    private final ClothesService clothesService;
+
     private final Path uploadDir = Paths.get("src/main/resources/static/posts");
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -35,7 +38,7 @@ public class PostController{
         String filename = null;
         if (image != null && !image.isEmpty()) {
             try {
-                filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
+                filename = UUID.randomUUID() + ".png";
 
                 if (!Files.exists(uploadDir)) {
                     Files.createDirectories(uploadDir);
@@ -43,6 +46,8 @@ public class PostController{
 
                 Path filePath = uploadDir.resolve(filename);
                 image.transferTo(filePath);
+                clothesService.processOriginalClothesImage(image, userId);
+
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
