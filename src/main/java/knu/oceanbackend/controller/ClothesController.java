@@ -3,6 +3,7 @@ package knu.oceanbackend.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import knu.oceanbackend.dto.clothes.ClothesCreateRequestDto;
 import knu.oceanbackend.dto.clothes.ClothesResponseDto;
+import knu.oceanbackend.dto.clothes.ClothesUpdateRequestDto;
 import knu.oceanbackend.entity.Clothes;
 import knu.oceanbackend.service.ClothesService;
 import lombok.RequiredArgsConstructor;
@@ -37,20 +38,21 @@ public class ClothesController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<Clothes>> getClothesByUser(@PathVariable Long userId) {
+    @GetMapping
+    public ResponseEntity<List<Clothes>> getClothesByUser(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("user_id");
         return ResponseEntity.ok(clothesService.getClothesByUser(userId));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Clothes> getClothById(@PathVariable Long id) {
+    public ResponseEntity<ClothesResponseDto> getClothById(@PathVariable Long id) {
         return ResponseEntity.ok(clothesService.getClothById(id));
     }
 
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Clothes> updateCloth(@PathVariable Long id, @RequestBody Clothes cloth) {
-        return ResponseEntity.ok(clothesService.updateCloth(id, cloth));
+    @PatchMapping("/{id}")
+    public ResponseEntity<Clothes> updateCloth(@PathVariable Long id, @RequestBody ClothesUpdateRequestDto requestDto) {
+        clothesService.updateCloth(id, requestDto);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

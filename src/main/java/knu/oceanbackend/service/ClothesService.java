@@ -1,8 +1,8 @@
 package knu.oceanbackend.service;
 
-import knu.oceanbackend.dto.AiClothesResult;
 import knu.oceanbackend.dto.clothes.ClothesCreateRequestDto;
 import knu.oceanbackend.dto.clothes.ClothesResponseDto;
+import knu.oceanbackend.dto.clothes.ClothesUpdateRequestDto;
 import knu.oceanbackend.entity.Clothes;
 import knu.oceanbackend.entity.User;
 import knu.oceanbackend.exception.UserNotFoundException;
@@ -59,9 +59,19 @@ public class ClothesService {
         clothesRepository.save(clothes);
     }
 
-    public Clothes getClothById(Long id) {
-        return clothesRepository.findById(id)
+    public ClothesResponseDto getClothById(Long id) {
+        Clothes clothes = clothesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cloth not found"));
+        return ClothesResponseDto.builder()
+                .username(clothes.getUser().getUsername())
+                .name(clothes.getName())
+                .print(clothes.getPrint())
+                .texture(clothes.getTexture())
+                .style(clothes.getStyle())
+                .detail(clothes.getDetail())
+                .type(clothes.getType())
+                .imageSrc(clothes.getImageSrc())
+                .build();
     }
 
     public List<Clothes> getClothesByUser(Long userId) {
@@ -70,19 +80,21 @@ public class ClothesService {
         return clothesRepository.findByUser(user);
     }
 
-    public Clothes updateCloth(Long id, Clothes clothDetails) {
-        Clothes cloth = getClothById(id);
-        cloth.setName(clothDetails.getName());
-        cloth.setType(clothDetails.getType());
-        cloth.setDetail(clothDetails.getDetail());
-        cloth.setPrint(clothDetails.getPrint());
-        cloth.setPrint(clothDetails.getPrint());
-        cloth.setTexture(clothDetails.getTexture());
-        cloth.setStyle(clothDetails.getStyle());
-        return clothesRepository.save(cloth);
+    public void updateCloth(Long id, ClothesUpdateRequestDto requestDto) {
+        Clothes clothes = clothesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cloth not found"));
+        if (requestDto.getName() != null) clothes.setName(requestDto.getName());
+        if (requestDto.getPrint() != null) clothes.setPrint(requestDto.getPrint());
+        if (requestDto.getTexture() != null) clothes.setTexture(requestDto.getTexture());
+        if (requestDto.getStyle() != null) clothes.setStyle(requestDto.getStyle());
+        if (requestDto.getDetail() != null) clothes.setDetail(requestDto.getDetail());
+        if (requestDto.getType() != null) clothes.setType(requestDto.getType());
+        clothesRepository.save(clothes);
     }
 
     public void deleteCloth(Long id) {
+        Clothes clothes = clothesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cloth not found"));
         clothesRepository.deleteById(id);
     }
 } 
