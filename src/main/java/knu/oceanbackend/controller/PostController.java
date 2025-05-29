@@ -35,7 +35,7 @@ public class PostController{
             description = "OOTD 사진을 넣으면 원본 저장 및 자동으로 AI 서버 전송 후 사진 저장"
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> createPost(
+    public ResponseEntity<PostResponseDto> createPost(
             HttpServletRequest request,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestPart("post") PostRequestDto requestDto) {
@@ -61,7 +61,7 @@ public class PostController{
         Long postId = postService.createPost(userId, post);
         clothesService.processOriginalClothesImage(image, userId, postId);
 
-        return ResponseEntity.noContent().build();
+        return getPostById(postId);
     }
 
     @Operation(
