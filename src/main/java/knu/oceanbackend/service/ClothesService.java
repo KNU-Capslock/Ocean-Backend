@@ -28,6 +28,8 @@ import java.util.UUID;
 public class ClothesService {
     private final UserRepository userRepository;
     private final ClothesRepository clothesRepository;
+    String directoryPath = "src/main/resources/static/clothes";
+
 
     private final AiServerClient aiServerClient;
 
@@ -39,10 +41,11 @@ public class ClothesService {
         User user = userRepository.findById(requestDto.getUserId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        // 이미지 저장
         String filename = UUID.randomUUID() + ".png";
-        Path imagePath = Paths.get("src/main/resources/static/clothes/" + filename);
+        Path imagePath = Paths.get(directoryPath, filename);
+
         try {
+            Files.createDirectories(Paths.get(directoryPath));
             Files.write(imagePath, image.getBytes());
         } catch (IOException e) {
             throw new RuntimeException("이미지 저장 실패", e);
