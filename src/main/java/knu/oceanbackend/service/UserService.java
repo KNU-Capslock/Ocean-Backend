@@ -17,7 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void createUser(UserRequestDto requestDto) {
+    public UserResponseDto createUser(UserRequestDto requestDto) {
 
         if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new RuntimeException("Username already exists");
@@ -29,11 +29,16 @@ public class UserService {
 
         requestDto.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
-        userRepository.save(User.builder()
+        User user = userRepository.save(User.builder()
                 .username(requestDto.getUsername())
                 .email(requestDto.getEmail())
                 .password(requestDto.getPassword())
                 .build());
+
+        return UserResponseDto.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .build();
     }
 
     public UserResponseDto getUserById(Long id) {

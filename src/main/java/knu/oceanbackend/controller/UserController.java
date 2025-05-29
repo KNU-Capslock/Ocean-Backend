@@ -22,9 +22,8 @@ public class UserController {
     )
     @PostMapping
     @SecurityRequirements
-    public ResponseEntity<Void> createUser(@RequestBody UserRequestDto requestDto) {
-        userService.createUser(requestDto);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto requestDto) {
+        return ResponseEntity.ok(userService.createUser(requestDto));
     }
 
     @Operation(
