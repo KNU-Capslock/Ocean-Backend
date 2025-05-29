@@ -5,6 +5,7 @@ import knu.oceanbackend.dto.clothes.ClothesResponseDto;
 import knu.oceanbackend.dto.clothes.ClothesUpdateRequestDto;
 import knu.oceanbackend.entity.Clothes;
 import knu.oceanbackend.entity.User;
+import knu.oceanbackend.exception.ClothesNotFoundException;
 import knu.oceanbackend.exception.UserNotFoundException;
 import knu.oceanbackend.external.AiServerClient;
 import knu.oceanbackend.repository.ClothesRepository;
@@ -61,7 +62,7 @@ public class ClothesService {
 
     public ClothesResponseDto getClothById(Long id) {
         Clothes clothes = clothesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cloth not found"));
+                .orElseThrow(() -> new ClothesNotFoundException("Clothes not found"));
         return ClothesResponseDto.builder()
                 .username(clothes.getUser().getUsername())
                 .name(clothes.getName())
@@ -82,7 +83,7 @@ public class ClothesService {
 
     public void updateCloth(Long id, ClothesUpdateRequestDto requestDto) {
         Clothes clothes = clothesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cloth not found"));
+                .orElseThrow(() -> new ClothesNotFoundException("Clothes not found"));
         if (requestDto.getName() != null) clothes.setName(requestDto.getName());
         if (requestDto.getPrint() != null) clothes.setPrint(requestDto.getPrint());
         if (requestDto.getTexture() != null) clothes.setTexture(requestDto.getTexture());
@@ -94,7 +95,7 @@ public class ClothesService {
 
     public void deleteCloth(Long id) {
         Clothes clothes = clothesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cloth not found"));
+                .orElseThrow(() -> new ClothesNotFoundException("Clothes not found"));
         clothesRepository.deleteById(id);
     }
 } 
