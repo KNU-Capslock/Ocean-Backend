@@ -54,7 +54,7 @@ public class ClothesController {
             description = "현재 로그인한 사용자의 옷 전체 조회"
     )
     @GetMapping
-    public ResponseEntity<List<Clothes>> getClothesByUser(HttpServletRequest request) {
+    public ResponseEntity<List<ClothesResponseDto>> getClothesByUser(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("user_id");
         return ResponseEntity.ok(clothesService.getClothesByUser(userId));
     }
