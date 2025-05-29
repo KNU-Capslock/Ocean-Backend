@@ -1,5 +1,6 @@
 package knu.oceanbackend.service;
 
+import knu.oceanbackend.dto.user.UserCreateRequestDto;
 import knu.oceanbackend.dto.user.UserResponseDto;
 import knu.oceanbackend.dto.user.UserUpdateRequestDto;
 import knu.oceanbackend.entity.User;
@@ -17,19 +18,23 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void createUser(User user) {
+    public void createUser(UserCreateRequestDto requestDto) {
 
-        if (userRepository.existsByUsername(user.getUsername())) {
+        if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new RuntimeException("Username already exists");
         }
 
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        requestDto.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
-        userRepository.save(user);
+        userRepository.save(User.builder()
+                .username(requestDto.getUsername())
+                .email(requestDto.getEmail())
+                .password(requestDto.getPassword())
+                .build());
     }
 
     public UserResponseDto getUserById(Long id) {
