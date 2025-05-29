@@ -78,6 +78,7 @@ public class ClothesService {
         Clothes clothes = clothesRepository.findById(id)
                 .orElseThrow(() -> new ClothesNotFoundException("Clothes not found"));
         return ClothesResponseDto.builder()
+                .id(clothes.getId())
                 .username(clothes.getUser().getUsername())
                 .name(clothes.getName())
                 .print(clothes.getPrint())
@@ -89,10 +90,24 @@ public class ClothesService {
                 .build();
     }
 
-    public List<Clothes> getClothesByUser(Long userId) {
+    public List<ClothesResponseDto> getClothesByUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        return clothesRepository.findByUser(user);
+        List<Clothes> clothesList = clothesRepository.findByUser(user);
+
+        return clothesList.stream()
+                .map(clothes -> ClothesResponseDto.builder()
+                        .id(clothes.getId())
+                        .name(clothes.getName())
+                        .username(clothes.getUser().getUsername())
+                        .type(clothes.getType())
+                        .detail(clothes.getDetail())
+                        .print(clothes.getPrint())
+                        .texture(clothes.getTexture())
+                        .style(clothes.getStyle())
+                        .imageSrc(clothes.getImageSrc())
+                        .build())
+                .toList();
     }
 
     public void updateCloth(Long id, ClothesUpdateRequestDto requestDto) {
