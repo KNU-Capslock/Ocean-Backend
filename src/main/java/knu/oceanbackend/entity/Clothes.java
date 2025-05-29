@@ -19,7 +19,6 @@ public class Clothes extends BaseEntity{
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
     private String name;
 
     private String type;
@@ -31,10 +30,4 @@ public class Clothes extends BaseEntity{
     @Column(nullable = false)
     @Schema(name = "image_src")
     private String imageSrc;
-
-    @Schema(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Schema(name = "modified_at")
-    private LocalDateTime modifiedAt;
 } 
