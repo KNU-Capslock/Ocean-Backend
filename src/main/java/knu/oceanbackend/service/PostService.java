@@ -19,14 +19,11 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
-    private final ClothesService clothService;
 
     public void createPost(Long userId, Post post) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         post.setUser(user);
-        
         postRepository.save(post);
     }
 
@@ -65,9 +62,10 @@ public class PostService {
     public void updatePost(Long id, PostRequestDto requestDto) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new PostNotFoundException("Post not found"));
-        post.setTitle(requestDto.getTitle());
-        post.setContent(requestDto.getContent());
-        
+
+        if (requestDto.getTitle() != null) post.setTitle(requestDto.getTitle());
+        if (requestDto.getContent() != null) post.setContent(requestDto.getContent());
+
         postRepository.save(post);
     }
 
