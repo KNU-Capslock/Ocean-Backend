@@ -1,5 +1,6 @@
 package knu.oceanbackend.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import knu.oceanbackend.dto.auth.AuthRequestDto;
 import knu.oceanbackend.dto.auth.AuthResponseDto;
 import knu.oceanbackend.security.jwt.JwtTokenProvider;
@@ -17,6 +18,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
+    @SecurityRequirements
     public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto request) {
 
         Long userId = authService.validateAndGetUserId(request.getUsername(), request.getPassword());

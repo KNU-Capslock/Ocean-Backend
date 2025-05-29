@@ -1,9 +1,10 @@
 package knu.oceanbackend.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.servlet.http.HttpServletRequest;
+import knu.oceanbackend.dto.user.UserCreateRequestDto;
 import knu.oceanbackend.dto.user.UserResponseDto;
 import knu.oceanbackend.dto.user.UserUpdateRequestDto;
-import knu.oceanbackend.entity.User;
 import knu.oceanbackend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody User user) {
-        userService.createUser(user);
+    @SecurityRequirements
+    public ResponseEntity<Void> createUser(@RequestBody UserCreateRequestDto requestDto) {
+        userService.createUser(requestDto);
         return ResponseEntity.noContent().build();
     }
 
