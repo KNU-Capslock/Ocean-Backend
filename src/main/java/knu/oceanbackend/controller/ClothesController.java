@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import knu.oceanbackend.dto.clothes.ClothesCreateRequestDto;
 import knu.oceanbackend.dto.clothes.ClothesResponseDto;
 import knu.oceanbackend.dto.clothes.ClothesUpdateRequestDto;
-import knu.oceanbackend.entity.Clothes;
 import knu.oceanbackend.service.ClothesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -73,7 +72,7 @@ public class ClothesController {
             description = "이미지 제외 수정 가능, 주로 옷 이름을 붙일 때 사용"
     )
     @PatchMapping("/{id}")
-    public ResponseEntity<Clothes> updateCloth(@PathVariable Long id, @RequestBody ClothesUpdateRequestDto requestDto) {
+    public ResponseEntity<Void> updateCloth(@PathVariable Long id, @RequestBody ClothesUpdateRequestDto requestDto) {
         clothesService.updateCloth(id, requestDto);
         return ResponseEntity.noContent().build();
     }

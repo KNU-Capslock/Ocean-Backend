@@ -97,7 +97,7 @@ public class PostController{
             description = "title과 content 수정 가능, 이미지 수정 불가능"
     )
     @PatchMapping("/{id}")
-    public ResponseEntity<Post> updatePost(
+    public ResponseEntity<Void> updatePost(
             @PathVariable Long id,
             @RequestBody PostRequestDto requestDto) {
 
