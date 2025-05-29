@@ -1,8 +1,7 @@
 package knu.oceanbackend.service;
 
-import knu.oceanbackend.dto.user.UserCreateRequestDto;
+import knu.oceanbackend.dto.user.UserRequestDto;
 import knu.oceanbackend.dto.user.UserResponseDto;
-import knu.oceanbackend.dto.user.UserUpdateRequestDto;
 import knu.oceanbackend.entity.User;
 import knu.oceanbackend.exception.UserNotFoundException;
 import knu.oceanbackend.repository.UserRepository;
@@ -18,7 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void createUser(UserCreateRequestDto requestDto) {
+    public void createUser(UserRequestDto requestDto) {
 
         if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new RuntimeException("Username already exists");
@@ -48,7 +47,7 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(Long id, UserUpdateRequestDto requestDto) {
+    public void updateUser(Long id, UserRequestDto requestDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         if (requestDto.getUsername() != null) user.setUsername(requestDto.getUsername());
