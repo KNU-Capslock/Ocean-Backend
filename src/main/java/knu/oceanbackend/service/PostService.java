@@ -1,8 +1,11 @@
 package knu.oceanbackend.service;
 
-import knu.oceanbackend.entity.Clothes;
+import knu.oceanbackend.dto.post.PostRequestDto;
+import knu.oceanbackend.dto.post.PostResponseDto;
 import knu.oceanbackend.entity.Post;
 import knu.oceanbackend.entity.User;
+import knu.oceanbackend.exception.PostNotFoundException;
+import knu.oceanbackend.exception.UserNotFoundException;
 import knu.oceanbackend.repository.PostRepository;
 import knu.oceanbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,53 +18,62 @@ import java.util.List;
 @Transactional
 public class PostService {
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
     private final UserService userService;
     private final ClothesService clothService;
-    private final UserRepository userRepository;
 
-    public Post createPost(Post post, Long userId, List<Long> clothIds) {
+    public void createPost(Long userId, Post post) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         post.setUser(user);
         
-        if (clothIds != null && !clothIds.isEmpty()) {
-            List<Clothes> clothes = clothIds.stream()
-                    .map(clothService::getClothById)
-                    .toList();
-            post.getClothes().addAll(clothes);
-        }
-        
-        return postRepository.save(post);
+        postRepository.save(post);
     }
 
-    public Post getPostById(Long id) {
-        return postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+    public PostResponseDto getPostById(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
+
+        return PostResponseDto.builder()
+                .title(post.getTitle())
+                .content(post.getContent())
+                .imageSrc(post.getImageSrc())
+                .createdAt(post.getCreatedAt())
+                .username(post.getUser().getUsername())
+                .build();
     }
 
-    public List<Post> getPostsByUser(Long userId) {
+    public List<PostResponseDto> getPostsByUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return postRepository.findByUserOrderByCreatedAtDesc(user);
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        List<Post> postList = postRepository.findByUserOrderByCreatedAtDesc(user);
+        if (postList.isEmpty()){
+            return List.of();
+        }
+        return postList.stream()
+                .map(post -> PostResponseDto.builder()
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .imageSrc(post.getImageSrc())
+                        .createdAt(post.getCreatedAt())
+                        .username(post.getUser().getUsername())
+                        .build())
+                .toList();
     }
 
-    public Post updatePost(Long id, Post postDetails, List<Long> clothIds) {
-        Post post = getPostById(id);
-        post.setTitle(postDetails.getTitle());
-        post.setContent(postDetails.getContent());
+    public void updatePost(Long id, PostRequestDto requestDto) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
+        post.setTitle(requestDto.getTitle());
+        post.setContent(requestDto.getContent());
         
-        if (clothIds != null) {
-            post.getClothes().clear();
-            List<Clothes> clothes = clothIds.stream()
-                    .map(clothService::getClothById)
-                    .toList();
-            post.getClothes().addAll(clothes);
-        }
-        
-        return postRepository.save(post);
+        postRepository.save(post);
     }
 
     public void deletePost(Long id) {
-        postRepository.deleteById(id);
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
+        postRepository.delete(post);
     }
 } 
