@@ -14,6 +14,9 @@ public class AiServerClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Value("${ai.server.url}")
+    private String aiServerUrl;
+    
     public void sendImageToAi(MultipartFile image, Long userId, Long postId) {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -28,8 +31,6 @@ public class AiServerClient {
             }
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-            String aiServerUrl = "http://localhost:8001/ai";
 
             restTemplate.postForEntity(aiServerUrl, requestEntity, String.class);
 
