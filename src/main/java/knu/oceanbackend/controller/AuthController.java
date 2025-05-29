@@ -1,5 +1,6 @@
 package knu.oceanbackend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import knu.oceanbackend.dto.auth.AuthRequestDto;
 import knu.oceanbackend.dto.auth.AuthResponseDto;
@@ -17,6 +18,10 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
 
+    @Operation(
+            summary = "로그인",
+            description = "username, password 입력 후 jwt 발급"
+    )
     @PostMapping("/login")
     @SecurityRequirements
     public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto request) {
