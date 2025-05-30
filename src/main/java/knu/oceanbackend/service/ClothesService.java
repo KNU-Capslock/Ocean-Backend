@@ -32,7 +32,7 @@ public class ClothesService {
     private final UserRepository userRepository;
     private final ClothesRepository clothesRepository;
     private final PostRepository postRepository;
-    String directoryPath = "src/main/resources/static/clothes";
+    String directoryPath = "src/main/resources/static/images/clothes";
 
     private final AiServerClient aiServerClient;
 
@@ -69,7 +69,7 @@ public class ClothesService {
         clothes.setPrint(requestDto.getPrint());
         clothes.setTexture(requestDto.getTexture());
         clothes.setStyle(requestDto.getStyle());
-        clothes.setImageSrc("/clothes/" + filename);
+        clothes.setImageSrc("/images/clothes/" + filename);
 
         clothesRepository.save(clothes);
     }

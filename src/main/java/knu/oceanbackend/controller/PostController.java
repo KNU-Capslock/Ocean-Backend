@@ -28,7 +28,7 @@ public class PostController{
     private final PostService postService;
     private final ClothesService clothesService;
 
-    private final Path uploadDir = Paths.get("src/main/resources/static/posts");
+    private final Path uploadDir = Paths.get("src/main/resources/static/images/posts");
 
     @Operation(
             summary = "게시물 생성",
@@ -57,7 +57,7 @@ public class PostController{
             }
         }
 
-        Post post = requestDto.toEntity(filename);
+        Post post = requestDto.toEntity("/images/posts/" + filename);
         Long postId = postService.createPost(userId, post);
         clothesService.processOriginalClothesImage(image, userId, postId);
 
