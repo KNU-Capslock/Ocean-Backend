@@ -38,7 +38,7 @@ public class PostController{
     public ResponseEntity<PostResponseDto> createPost(
             HttpServletRequest request,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            @ModelAttribute PostRequestDto requestDto) {
+            @RequestPart("post") PostRequestDto requestDto) {
         Long userId = (Long) request.getAttribute("user_id");
         String filename = null;
         if (image != null && !image.isEmpty()) {
