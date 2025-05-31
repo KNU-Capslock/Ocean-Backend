@@ -8,18 +8,12 @@ import knu.oceanbackend.entity.Post;
 import knu.oceanbackend.service.ClothesService;
 import knu.oceanbackend.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/posts")
@@ -27,8 +21,6 @@ import java.util.UUID;
 public class PostController{
     private final PostService postService;
     private final ClothesService clothesService;
-
-    private final Path uploadDir = Paths.get("images/posts");
 
     @Operation(
             summary = "게시물 생성",
@@ -39,25 +31,11 @@ public class PostController{
             HttpServletRequest request,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestPart("post") PostRequestDto requestDto) {
+
         Long userId = (Long) request.getAttribute("user_id");
-        String filename = null;
-        if (image != null && !image.isEmpty()) {
-            try {
-                filename = UUID.randomUUID() + ".png";
-
-                if (!Files.exists(uploadDir)) {
-                    Files.createDirectories(uploadDir);
-                }
-
-                Path filePath = uploadDir.resolve(filename);
-                image.transferTo(filePath);
-
-            } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        }
-
+        String filename = postService.saveImage(image);
         Post post = requestDto.toEntity("/images/posts/" + filename);
+
         Long postId = postService.createPost(userId, post);
         clothesService.processOriginalClothesImage(image, userId, postId);
 

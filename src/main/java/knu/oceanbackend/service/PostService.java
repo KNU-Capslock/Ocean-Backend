@@ -14,7 +14,14 @@ import knu.oceanbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +31,29 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ClothesRepository clothesRepository;
+
+    private final Path uploadDir = Paths.get("images/posts");
+
+    public String saveImage(MultipartFile image){
+        String filename = null;
+        if (image != null && !image.isEmpty()) {
+            try {
+                filename = UUID.randomUUID() + ".png";
+
+                if (!Files.exists(uploadDir)) {
+                    Files.createDirectories(uploadDir);
+                }
+
+                Path filePath = uploadDir.resolve(filename);
+                image.transferTo(filePath);
+                return filename;
+
+            } catch (IOException e) {
+                return null;
+            }
+        }
+        return filename;
+    }
 
     public Long createPost(Long userId, Post post) {
         User user = userRepository.findById(userId)
