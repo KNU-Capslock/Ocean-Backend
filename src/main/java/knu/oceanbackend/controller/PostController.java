@@ -28,7 +28,7 @@ public class PostController{
     private final PostService postService;
     private final ClothesService clothesService;
 
-    private final Path uploadDir = Paths.get("src/main/resources/static/images/posts");
+    private final Path uploadDir = Paths.get("images/posts");
 
     @Operation(
             summary = "게시물 생성",

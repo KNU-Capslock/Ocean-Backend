@@ -32,7 +32,7 @@ public class ClothesService {
     private final UserRepository userRepository;
     private final ClothesRepository clothesRepository;
     private final PostRepository postRepository;
-    String directoryPath = "src/main/resources/static/images/clothes";
+    String directoryPath = "images/clothes";
 
     private final AiServerClient aiServerClient;
 
