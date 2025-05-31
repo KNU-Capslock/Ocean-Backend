@@ -4,8 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-/src/main/resources/static/posts
-/src/main/resources/static/clothes
+/images/**
 application.properties
 .env
 
